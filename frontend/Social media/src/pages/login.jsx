@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import "./login.css";
-import axiosInstance from "../../axiosCalls/axios";
+import axiosInstance from "../axiosCalls/axios";
 
 function Login() {
 
