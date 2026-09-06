@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import "./login.css";
 import axiosInstance from "../axiosCalls/axios";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
 
@@ -9,6 +10,7 @@ function Login() {
     const [form, setfrom] = useState({ email: "", password: "" })
     const [error, seterror] = useState('')
     const [loader, setloader] = useState(false)
+    const {setUser} = useAuth();
 
     const navigate = useNavigate()
 
@@ -22,7 +24,8 @@ function Login() {
         seterror()
         setloader()
         try {
-            await axiosInstance.post("/user/login", form)
+         const response =await axiosInstance.post("/user/login", form)
+         setUser(response.data.user)
             navigate("/home")
             console.log("User login")
 

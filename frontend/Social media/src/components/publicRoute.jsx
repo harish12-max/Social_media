@@ -1,7 +1,21 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import React from 'react'
+import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
-function publicRoute({childern}){
-    const {user,loading} = useAuth()
 
+function PublicRoute({ children }) {
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return <h1>Loading...</h1>;
+    }
+
+    if (user) {
+        return <Navigate to="/home" />;
+    }
+
+    return children;
 }
+
+
+export default PublicRoute
