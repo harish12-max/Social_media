@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link ,useNavigate } from "react-router-dom";
 import { useState } from "react";
-import "./signup.css";
+import "../styles/signup.css";
 import axiosInstance from "../axiosCalls/axios";
 
 function Signup() {
@@ -10,6 +10,7 @@ function Signup() {
     const [form, setForm] = useState({ name: "", username: "", email: "", password: "" })
     const [err, seterror] = useState("")
     const [loader, setloader] = useState(false)
+    const navigate = useNavigate()
 
     const handlechange = (e) => {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -23,6 +24,7 @@ function Signup() {
         try {
             await axiosInstance.post("/user/register", form)
             console.log("User Registered")
+            navigate("/login")
 
             setForm({
                 name: "",

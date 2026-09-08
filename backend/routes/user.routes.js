@@ -7,9 +7,9 @@ const userRoutes = express.Router()
 // Register User 
 userRoutes.post("/register", registerUser)
 userRoutes.post("/login" , loginUser)
-userRoutes.post("/logout" , logoutUser )
+userRoutes.post("/logout", isAuthenticated , logoutUser )
 userRoutes.get("/me" , isAuthenticated,getuser)
-userRoutes.get("/profile/:username",getUserProfile)
+userRoutes.get("/profile/:username",  isAuthenticated ,getUserProfile)
 
 
 //  login User 
