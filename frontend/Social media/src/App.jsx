@@ -5,7 +5,7 @@ import Home from "./pages/Home"
 import Landing from "./pages/landing";
 import PublicRoute from "./components/publicRoute";
 import ProtectedRoute from "./components/protectedRoute";
-// import Profile from "./pages/Profile";
+import Profile from "./pages/Profile";
 import { AuthProvider } from "./context/AuthContext";
 
 
@@ -18,7 +18,7 @@ function App() {
                 <Route path="/signup" element={<PublicRoute><Signup/></PublicRoute>} />
                 <Route path="/login" element={<PublicRoute><Login/></PublicRoute>} />
                 <Route path="/home" element={<ProtectedRoute><Home/></ProtectedRoute>} />
-                {/* <Route path="/profile/username" element={<ProtectedRoute><Profile/></ProtectedRoute>} /> */}
+                <Route path="/profile/:username" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
             </Routes>
         </BrowserRouter>
         </AuthProvider>
