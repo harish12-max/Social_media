@@ -1,0 +1,1060 @@
+/* =========================================================
+   PROFILE PAGE
+========================================================= */
+
+.profile-page {
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 40px 20px;
+
+    background:
+        radial-gradient(
+            circle at 0% 0%,
+            rgba(49, 93, 245, 0.14),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 100% 100%,
+            rgba(8, 184, 212, 0.12),
+            transparent 30%
+        ),
+        #f5f8ff;
+
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   WRAPPER
+========================================================= */
+
+.profile-wrapper {
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   PROFILE CARD
+========================================================= */
+
+.profile-card {
+    width: 100%;
+
+    background: #ffffff;
+
+    border-radius: 24px;
+
+    box-sizing: border-box;
+
+    padding: 45px 50px;
+
+    box-shadow:
+        0 15px 45px rgba(30, 70, 140, 0.08);
+
+    border: 1px solid rgba(220, 228, 240, 0.7);
+
+    /* IMPORTANT:
+       Never rotate the card */
+    transform: none;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   PROFILE MAIN HEADER
+========================================================= */
+
+.profile-main {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 45px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   AVATAR AREA
+========================================================= */
+
+.profile-avatar-wrapper {
+    position: relative;
+
+    flex-shrink: 0;
+
+    width: 165px;
+    height: 165px;
+}
+
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(
+        135deg,
+        #315df5,
+        #08b8d4
+    );
+
+    color: white;
+
+    font-size: 58px;
+    font-weight: 700;
+
+    border: 5px solid white;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 12px 30px rgba(49, 93, 245, 0.22);
+}
+
+
+/* =========================================================
+   ONLINE DOT
+========================================================= */
+
+.online-dot {
+    position: absolute;
+
+    right: 5px;
+    bottom: 8px;
+
+    width: 17px;
+    height: 17px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    border: 3px solid white;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   USER CONTENT
+========================================================= */
+
+.profile-content {
+    flex: 1;
+
+    min-width: 0;
+
+    width: auto;
+
+    display: block;
+
+    text-align: left;
+}
+
+
+/* =========================================================
+   NAME + USERNAME
+========================================================= */
+
+.profile-title h1 {
+    margin: 0;
+
+    color: #101828;
+
+    font-size: 32px;
+
+    line-height: 1.2;
+
+    font-weight: 750;
+}
+
+
+.profile-title p {
+    margin: 7px 0 0;
+
+    color: #667085;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   BIO
+========================================================= */
+
+.profile-bio {
+    margin: 16px 0 0;
+
+    max-width: 520px;
+
+    color: #667085;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.profile-stats {
+    display: flex;
+
+    align-items: center;
+
+    gap: 42px;
+
+    margin-top: 23px;
+}
+
+
+.profile-stat {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+}
+
+
+.profile-stat strong {
+    color: #101828;
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+
+.profile-stat span {
+    margin-top: 4px;
+
+    color: #667085;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.profile-actions {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 23px;
+}
+
+
+.profile-follow-btn,
+.profile-message-btn {
+    height: 44px;
+
+    padding: 0 27px;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+/* Follow */
+
+.profile-follow-btn {
+    border: none;
+
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #315df5,
+        #08b8d4
+    );
+
+    box-shadow:
+        0 8px 20px rgba(49, 93, 245, 0.20);
+}
+
+
+.profile-follow-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(49, 93, 245, 0.27);
+}
+
+
+/* Message */
+
+.profile-message-btn {
+    background: white;
+
+    color: #344054;
+
+    border: 1px solid #d0d5dd;
+}
+
+
+.profile-message-btn:hover {
+    background: #f8fafc;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.profile-tabs {
+    width: 100%;
+
+    display: flex;
+
+    margin-top: 45px;
+
+    border-top: 1px solid #e4e7ec;
+
+    border-bottom: 1px solid #e4e7ec;
+}
+
+
+.profile-tab {
+    position: relative;
+
+    flex: 1;
+
+    padding: 18px 10px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #667085;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: color 0.2s ease;
+}
+
+
+.profile-tab:hover {
+    color: #101828;
+}
+
+
+.profile-tab.active {
+    color: #101828;
+
+    font-weight: 700;
+}
+
+
+.profile-tab.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 25%;
+    bottom: -1px;
+
+    width: 50%;
+    height: 3px;
+
+    background: linear-gradient(
+        90deg,
+        #315df5,
+        #08b8d4
+    );
+
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   POSTS
+========================================================= */
+
+.profile-posts {
+    width: 100%;
+
+    min-height: 360px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   EMPTY POSTS
+========================================================= */
+
+.empty-posts {
+    min-height: 360px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    padding: 50px 20px;
+
+    box-sizing: border-box;
+}
+
+
+.empty-post-icon {
+    width: 76px;
+    height: 76px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #eef4ff,
+        #e8fbff
+    );
+
+    border: 1px solid #d9e2f2;
+
+    color: #315df5;
+
+    font-size: 34px;
+
+    margin-bottom: 20px;
+}
+
+
+.empty-posts h2 {
+    margin: 0;
+
+    color: #101828;
+
+    font-size: 22px;
+
+    font-weight: 700;
+}
+
+
+.empty-posts p {
+    margin: 8px 0 0;
+
+    color: #667085;
+
+    font-size: 14px;
+}
+
+
+.empty-post-btn {
+    margin-top: 20px;
+
+    padding: 11px 22px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #315df5,
+        #08b8d4
+    );
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px rgba(49, 93, 245, 0.18);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.empty-post-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(49, 93, 245, 0.25);
+}
+
+
+/* =========================================================
+   POSTS GRID
+========================================================= */
+
+.posts-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 8px;
+
+    padding-top: 8px;
+}
+
+
+.post-card {
+    aspect-ratio: 1 / 1;
+
+    background: #f1f5f9;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.profile-loading {
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f8ff;
+}
+
+
+.profile-loader {
+    width: 42px;
+    height: 42px;
+
+    border: 4px solid #e4e7ec;
+
+    border-top-color: #315df5;
+
+    border-radius: 50%;
+
+    animation: profile-spin 0.8s linear infinite;
+}
+
+
+@keyframes profile-spin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   PROFILE NOT FOUND
+========================================================= */
+
+.profile-not-found {
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background: #f5f8ff;
+}
+
+
+.not-found-card {
+    width: min(420px, 100%);
+
+    padding: 40px 30px;
+
+    text-align: center;
+
+    background: white;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 15px 40px rgba(30, 70, 140, 0.08);
+}
+
+
+.not-found-icon {
+    width: 60px;
+    height: 60px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eef4ff;
+
+    color: #315df5;
+
+    font-size: 28px;
+
+    font-weight: 700;
+}
+
+
+.not-found-card h2 {
+    margin: 0;
+
+    color: #101828;
+
+    font-size: 22px;
+}
+
+
+.not-found-card p {
+    margin-top: 8px;
+
+    color: #667085;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .profile-page {
+        padding: 25px 15px;
+    }
+
+
+    .profile-card {
+        padding: 35px 30px;
+
+        border-radius: 20px;
+    }
+
+
+    .profile-main {
+        gap: 30px;
+    }
+
+
+    .profile-avatar-wrapper {
+        width: 135px;
+        height: 135px;
+    }
+
+
+    .profile-avatar {
+        font-size: 48px;
+    }
+
+
+    .profile-title h1 {
+        font-size: 28px;
+    }
+
+
+    .profile-stats {
+        gap: 28px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    /*
+       IMPORTANT:
+       The card becomes a normal page section.
+       No floating effect.
+       No rotation.
+    */
+
+    .profile-page {
+        min-height: 100vh;
+
+        padding: 0;
+
+        background: #f5f8ff;
+
+        display: block;
+
+        overflow-x: hidden;
+    }
+
+
+    .profile-wrapper {
+        width: 100%;
+
+        max-width: none;
+
+        margin: 0;
+    }
+
+
+    .profile-card {
+        width: 100%;
+
+        min-height: 100vh;
+
+        margin: 0;
+
+        padding: 30px 18px 40px;
+
+        border-radius: 0;
+
+        border: none;
+
+        box-shadow: none;
+
+        transform: none;
+
+        overflow: visible;
+    }
+
+
+    /* Header becomes vertical */
+
+    .profile-main {
+        width: 100%;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 18px;
+
+        text-align: center;
+    }
+
+
+    /* Avatar */
+
+    .profile-avatar-wrapper {
+        width: 125px;
+        height: 125px;
+    }
+
+
+    .profile-avatar {
+        font-size: 44px;
+
+        border-width: 4px;
+    }
+
+
+    .online-dot {
+        right: 1px;
+        bottom: 5px;
+
+        width: 17px;
+        height: 17px;
+    }
+
+
+    /* Content */
+
+    .profile-content {
+        width: 100%;
+
+        flex: none;
+
+        text-align: center;
+    }
+
+
+    .profile-title h1 {
+        font-size: 27px;
+    }
+
+
+    .profile-title p {
+        margin-top: 6px;
+
+        font-size: 15px;
+    }
+
+
+    /* Bio */
+
+    .profile-bio {
+        width: 100%;
+
+        max-width: 380px;
+
+        margin: 14px auto 0;
+
+        font-size: 14px;
+
+        line-height: 1.6;
+    }
+
+
+    /* Stats */
+
+    .profile-stats {
+        width: 100%;
+
+        display: flex;
+
+        justify-content: center;
+
+        gap: 35px;
+
+        margin-top: 23px;
+    }
+
+
+    .profile-stat {
+        align-items: center;
+
+        min-width: 65px;
+    }
+
+
+    .profile-stat strong {
+        font-size: 20px;
+    }
+
+
+    .profile-stat span {
+        font-size: 13px;
+    }
+
+
+    /* Buttons */
+
+    .profile-actions {
+        width: 100%;
+
+        display: flex;
+
+        justify-content: center;
+
+        gap: 10px;
+
+        margin-top: 22px;
+    }
+
+
+    .profile-follow-btn,
+    .profile-message-btn {
+        flex: 1;
+
+        max-width: 170px;
+
+        height: 44px;
+
+        padding: 0 15px;
+
+        font-size: 14px;
+    }
+
+
+    /* Tabs */
+
+    .profile-tabs {
+        margin-top: 32px;
+    }
+
+
+    .profile-tab {
+        padding: 17px 5px;
+
+        font-size: 14px;
+    }
+
+
+    /* Posts */
+
+    .profile-posts {
+        min-height: 350px;
+    }
+
+
+    .empty-posts {
+        min-height: 350px;
+
+        padding: 40px 15px;
+    }
+
+
+    .empty-post-icon {
+        width: 70px;
+        height: 70px;
+
+        font-size: 30px;
+    }
+
+
+    .empty-posts h2 {
+        font-size: 21px;
+    }
+
+
+    .empty-posts p {
+        font-size: 13px;
+    }
+
+
+    .empty-post-btn {
+        padding: 10px 18px;
+
+        font-size: 13px;
+    }
+
+
+    /* Grid */
+
+    .posts-grid {
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 4px;
+    }
+
+
+    .post-card {
+        border-radius: 3px;
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .profile-card {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+
+    .profile-avatar-wrapper {
+        width: 110px;
+        height: 110px;
+    }
+
+
+    .profile-avatar {
+        font-size: 39px;
+    }
+
+
+    .profile-title h1 {
+        font-size: 24px;
+    }
+
+
+    .profile-bio {
+        font-size: 13px;
+    }
+
+
+    .profile-stats {
+        gap: 20px;
+    }
+
+
+    .profile-stat {
+        min-width: 58px;
+    }
+
+
+    .profile-stat strong {
+        font-size: 18px;
+    }
+
+
+    .profile-stat span {
+        font-size: 12px;
+    }
+
+
+    .profile-follow-btn,
+    .profile-message-btn {
+        height: 42px;
+
+        font-size: 13px;
+
+        padding: 0 10px;
+    }
+
+
+    .profile-tab {
+        font-size: 13px;
+
+        padding: 15px 3px;
+    }
+}
