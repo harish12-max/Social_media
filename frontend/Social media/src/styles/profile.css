@@ -1058,3 +1058,45 @@
         padding: 15px 3px;
     }
 }
+
+
+.profile-connections {
+    display: flex;
+    gap: 30px;
+    margin-top: 40px;
+    padding: 0 5px;
+}
+
+.connection-section {
+    flex: 1;
+}
+
+.connection-section h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.connection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.connection-user {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    border: 1px solid #e2e5ea;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.connection-user strong {
+    font-size: 16px;
+}
+
+.connection-user span {
+    margin-top: 3px;
+    color: #777;
+    font-size: 14px;
+}

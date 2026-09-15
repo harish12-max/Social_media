@@ -27,10 +27,16 @@ const userschema = new mongoose.Schema({
       type: String
    },
    followers: [
-      //ids to be stored
+      {
+         type:mongoose.Schema.Types.ObjectId,
+         ref:"User"
+      }
    ],
    following: [
-      //ids to be stored
+      {
+         type:mongoose.Schema.Types.ObjectId,
+         ref:"User"
+      }
    ],
    stories: [
       //ids to be stored

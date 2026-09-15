@@ -1,4 +1,3 @@
-
 import User from "../models/user.model.js"
 import bcrypt from "bcrypt";
 import gentoken from "../utils/gentoken.js";
@@ -12,13 +11,13 @@ export const registerUser = async (req, res) => {
 
     const { name, username, email, password } = req.body
 
-    // validation 
+
     try {
         if (!username || !name || !email || !password) {
             return res.status(422).json({ message: 'All fields Required' })
         }
 
-        // if user exist 
+
 
         const userNameExist = await User.findOne({ username })
         if (userNameExist) {
@@ -41,12 +40,12 @@ export const registerUser = async (req, res) => {
         const token = gentoken(newUser._id)
 
         res.cookie("token", token, cookieOptions)
-        res.status(200).json(newUser)
+        return res.status(200).json(newUser)
 
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: "Internal Server Error" })
+        return res.status(500).json({ message: "Internal Server Error" })
     }
 }
 
@@ -76,7 +75,7 @@ export const loginUser = async (req, res) => {
         const token = gentoken(userExist._id)
         res.cookie("token", token, cookieOptions)
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "Login Successful",
             user: userExist,
         })
@@ -84,37 +83,115 @@ export const loginUser = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: "Intenal Server Error" }, error)
+        return res.status(500).json({ message: "Intenal Server Error" }, error)
     }
 }
 
 export const getuser = (req, res) => {
-    res.status(200).json(req.user)
+    return res.status(200).json(req.user)
 }
 
 export const logoutUser = (req, res) => {
     res.clearCookie("token")
-    res.status(200).json({ message: "Logout Successful" })
+    return res.status(200).json({ message: "Logout Successful" })
 }
 
 export const getUserProfile = async (req, res) => {
-    
+
     try {
         const { username } = req.params
-        const userData = await User.findOne({ username }).select("-password")
-        console.log("USER DATA:", userData)
+        const userData = await User.findOne({ username })
+        .select("-password")
+        .populate("followers" , "name username")
+        .populate("following" , "name username")
+        // console.log("USER DATA:", userData)
 
         if (!userData) {
             return res.status(404).json({ message: "User Not Found" })
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "User found",
             userDetails: userData
         })
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: "Internal Server Error" })
+        return res.status(500).json({ message: "Internal Server Error" })
+    }
+}
+
+
+export const followUser = async (req, res) => {
+
+    try {
+        const currentUserId = req.user._id; // this give id in object
+        const targetUserId = req.params.id;   // this give id in string
+
+        if (currentUserId.toString() === targetUserId.toString()) {
+            return res.status(409).json({ message: "you cannot follow yourSelf" });
+        }
+
+        const targetUser = await User.findById(targetUserId); // checking weather the user exist in the Db 
+
+        if (!targetUser) {
+            return res.status(404).json({ message: "User Not Found" });
+        }
+
+        const alreadyFollowing = targetUser.followers.some((id) => id.toString() === currentUserId.toString()); //  checking weather the already following the user or not
+
+        if (alreadyFollowing) {
+            return res.status(409).json({ message: "You are already following this User" });
+        }
+
+        await User.findByIdAndUpdate(currentUserId, {
+            $addToSet: { following: targetUserId }
+        })
+
+        await User.findByIdAndUpdate(targetUserId, {
+            $addToSet: { followers: currentUserId }
+        })
+
+        return res.status(200).json({ message: "User Followed" })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: "Internal server error" })
+
+    }
+}
+
+
+
+export const unfollowUser = async (req, res) => {
+
+    try {
+        const currentUserId = req.user._id; // this give id in object
+        const targetUserId = req.params.id;   // this give id in string
+
+        if (currentUserId.toString() === targetUserId.toString()) {
+            return res.status(409).json({ message: "you cannot unfollow yourSelf" });
+        }
+
+        const targetUser = await User.findById(targetUserId); // checking weather the user exist in the Db 
+
+        if (!targetUser) {
+            return res.status(404).json({ message: "User Not Found" });
+        }
+
+        await User.findByIdAndUpdate(currentUserId, {
+            $pull: { following: targetUserId }
+        })
+
+        await User.findByIdAndUpdate(targetUserId, {
+            $pull: { followers: currentUserId }
+        })
+
+        return res.status(200).json({ message: "User unFollowed" })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: "Internal server error" })
+
     }
 }

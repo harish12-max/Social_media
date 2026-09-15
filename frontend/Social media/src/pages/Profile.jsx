@@ -8,6 +8,24 @@ function Profile() {
 
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState(null);
+
+
+    useEffect(() => {
+        const getcurrentUser = async () => {
+            try {
+                const response = await axiosInstance.get("/user/me")
+                setCurrentUser(response.data);
+            } catch (error) {
+                console.log("get current USer :", error)
+
+            }
+        }
+        getcurrentUser();
+    }, [])
+
+    const isOwnProfile = currentUser?.username === username;
+
 
     useEffect(() => {
         const fetchDetail = async () => {
@@ -32,9 +50,7 @@ function Profile() {
         fetchDetail();
     }, [username]);
 
-    /* =========================
-       LOADING
-    ========================= */
+
 
     if (loading) {
         return (
@@ -44,9 +60,7 @@ function Profile() {
         );
     }
 
-    /* =========================
-       USER NOT FOUND
-    ========================= */
+
 
     if (!userData) {
         return (
@@ -64,9 +78,6 @@ function Profile() {
         );
     }
 
-    /* =========================
-       USER DATA
-    ========================= */
 
     const postsCount = userData.posts?.length || 0;
     const followersCount = userData.followers?.length || 0;
@@ -174,15 +185,69 @@ function Profile() {
 
 
                             {/* Buttons */}
-                            <div className="profile-actions">
+                            {!isOwnProfile && (
+                                <div className="profile-actions">
+                                    <button className="profile-follow-btn">
+                                        Follow
+                                    </button>
 
-                                <button className="profile-follow-btn">
-                                    Follow
-                                </button>
+                                    <button className="profile-message-btn">
+                                        Message
+                                    </button>
+                                </div>
+                            )}
 
-                                <button className="profile-message-btn">
-                                    Message
-                                </button>
+                        </div>
+
+                    </div>
+
+                    {/* followers */}
+                    <div className="profile-connections">
+
+                        <div className="connection-section">
+
+                            <h2>Followers</h2>
+
+                            <div className="connection-list">
+
+                                {userData.followers?.length === 0 ? (
+                                    <p>No followers yet</p>
+                                ) : (
+                                    userData.followers.map((follower) => (
+                                        <div
+                                            className="connection-user"
+                                            key={follower._id}
+                                        >
+                                            <strong>{follower.name}</strong>
+                                            <span>@{follower.username}</span>
+                                        </div>
+                                    ))
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="connection-section">
+
+                            <h2>Following</h2>
+
+                            <div className="connection-list">
+
+                                {userData.following?.length === 0 ? (
+                                    <p>Not following anyone</p>
+                                ) : (
+                                    userData.following.map((following) => (
+                                        <div
+                                            className="connection-user"
+                                            key={following._id}
+                                        >
+                                            <strong>{following.name}</strong>
+                                            <span>@{following.username}</span>
+                                        </div>
+                                    ))
+                                )}
 
                             </div>
 
@@ -191,85 +256,11 @@ function Profile() {
                     </div>
 
 
-                    {/* =================================
-                        TABS
-                    ================================= */}
-
-                    <div className="profile-tabs">
-
-                        <button className="profile-tab active">
-                            <span>▦</span>
-                            Posts
-                        </button>
-
-                        <button className="profile-tab">
-                            <span>▶</span>
-                            Reels
-                        </button>
-
-                        <button className="profile-tab">
-                            <span>♡</span>
-                            Saved
-                        </button>
-
-                    </div>
-
-
-                    {/* =================================
-                        POSTS SECTION
-                    ================================= */}
-
-                    <div className="profile-posts">
-
-                        {postsCount === 0 ? (
-
-                            <div className="empty-posts">
-
-                                <div className="empty-post-icon">
-                                    +
-                                </div>
-
-                                <h2>
-                                    No Posts Yet
-                                </h2>
-
-                                <p>
-                                    {userData.name} hasn't shared
-                                    anything yet.
-                                </p>
-
-                                <button className="empty-post-btn">
-                                    Create your first post
-                                </button>
-
-                            </div>
-
-                        ) : (
-
-                            <div className="posts-grid">
-
-                                {userData.posts.map((post, index) => (
-
-                                    <div
-                                        className="post-card"
-                                        key={post._id || index}
-                                    >
-                                        {/* Post content will be added later */}
-                                    </div>
-
-                                ))}
-
-                            </div>
-
-                        )}
-
-                    </div>
-
                 </section>
 
             </main>
 
-        </div>
+        </div >
     );
 }
 
