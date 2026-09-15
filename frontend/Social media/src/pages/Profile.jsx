@@ -9,46 +9,71 @@ function Profile() {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
+    const [isFollowing, setIsFollowing] = useState(false);
 
-
-    useEffect(() => {
-        const getcurrentUser = async () => {
-            try {
-                const response = await axiosInstance.get("/user/me")
-                setCurrentUser(response.data);
-            } catch (error) {
-                console.log("get current USer :", error)
-
-            }
-        }
-        getcurrentUser();
-    }, [])
 
     const isOwnProfile = currentUser?.username === username;
 
+    const fetchProfile = async () => {
+        try {
+            const response = await axiosInstance.get(`/user/profile/${username}`)
+            setUserData(response.data.userDetails)
+            return response.data.userDetails
+
+        } catch (error) {
+            console.error("Failed to fetch profile data:", error);
+        }
+    }
+
 
     useEffect(() => {
-        const fetchDetail = async () => {
+        const loadProfile = async () => {
             try {
-                setLoading(true);
+                setLoading(true)
 
-                const response = await axiosInstance.get(
-                    `/user/profile/${username}`
-                );
+                const profile = await fetchProfile()
+                const meResponse = await axiosInstance.get("/user/me")
+                const myFollowingList = meResponse.data.following || [];
 
-                console.log("PROFILE RESPONSE:", response.data);
+                setCurrentUser(meResponse.data)
 
-                setUserData(response.data.userDetails);
+                const following = myFollowingList.some((id) => {
+                    return id.toString() == profile._id.toString();
+                })
+
+                setIsFollowing(following);
+
             } catch (error) {
-                console.error("Failed to fetch profile data:", error);
-                setUserData(null);
+                console.error(error);
+
             } finally {
                 setLoading(false);
             }
+
         };
 
-        fetchDetail();
-    }, [username]);
+        loadProfile();
+    }, [username])
+
+
+    const handlefollow = async () => {
+        try {
+            if (isFollowing) {
+                await axiosInstance.delete(`/user/${userData._id}/follow`)
+                setIsFollowing(false);
+            } else {
+                await axiosInstance.post(`/user/${userData._id}/follow`)
+                setIsFollowing(true)
+            }
+
+            setIsFollowing(!isFollowing);
+
+            await fetchProfile();
+        } catch (error) {
+            console.log(error)
+            alert(error.response?.data?.message || "Something went wrong")
+        }
+    }
 
 
 
@@ -187,8 +212,11 @@ function Profile() {
                             {/* Buttons */}
                             {!isOwnProfile && (
                                 <div className="profile-actions">
-                                    <button className="profile-follow-btn">
-                                        Follow
+                                    <button
+                                        className="profile-follow-btn"
+                                        onClick={handlefollow}
+                                    >
+                                        {isFollowing ? "Unfollow" : "Follow"}
                                     </button>
 
                                     <button className="profile-message-btn">
