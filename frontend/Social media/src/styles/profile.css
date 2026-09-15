@@ -1100,3 +1100,212 @@
     color: #777;
     font-size: 14px;
 }
+
+
+
+/* Make the profile header the reference point
+   for the Edit Profile button */
+.profile-header {
+    position: relative;
+}
+
+
+/* ================================
+   EDIT PROFILE BUTTON
+================================ */
+
+.profile-edit-btn {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+
+    padding: 10px 22px;
+
+    border: 1px solid #d5dce8;
+    border-radius: 10px;
+
+    background: white;
+    color: #1e293b;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+}
+
+
+/* Hover effect */
+
+.profile-edit-btn:hover {
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+    );
+
+    color: white;
+
+    border-color: transparent;
+
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.20);
+
+    transform: translateY(-2px);
+}
+
+
+/* When clicking */
+
+.profile-edit-btn:active {
+    transform: translateY(0);
+}
+
+
+@media (max-width: 700px) {
+    .profile-edit-btn {
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+}
+
+
+
+
+
+
+/* ==============================
+   EDIT PROFILE
+================================ */
+
+.edit-profile-section {
+    width: 100%;
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.edit-profile-section h2 {
+    font-size: 28px;
+    color: #17213c;
+    margin-bottom: 20px;
+}
+
+
+/* Edit Form */
+
+.edit-profile-form {
+    width: 100%;
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 22px;
+
+    border: 1px solid #dbe7f7;
+
+    box-shadow:
+        0 20px 45px rgba(37, 99, 235, 0.12),
+        0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+
+/* Form Group */
+
+.edit-form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+
+/* Labels */
+
+.edit-form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+
+/* Inputs */
+
+.edit-form-group input,
+.edit-form-group textarea {
+    width: 100%;
+    padding: 13px 15px;
+
+    font-size: 15px;
+    font-family: inherit;
+
+    color: #17213c;
+    background: #f8fbff;
+
+    border: 1px solid #d7e3f3;
+    border-radius: 10px;
+
+    outline: none;
+
+    transition: all 0.2s ease;
+}
+
+
+/* Input focus */
+
+.edit-form-group input:focus,
+.edit-form-group textarea:focus {
+    border-color: #3284ed;
+
+    background: #ffffff;
+
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+
+/* Bio */
+
+.edit-form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+
+/* Save Button */
+
+.edit-save-btn {
+    border: none;
+
+    padding: 13px 24px;
+
+    border-radius: 10px;
+
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+    );
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.20);
+
+    transition: all 0.2s ease;
+}
+
+
+.edit-save-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(37, 99, 235, 0.28);
+}
+
+
+.edit-save-btn:active {
+    transform: translateY(0);
+}

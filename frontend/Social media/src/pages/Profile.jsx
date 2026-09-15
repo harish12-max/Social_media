@@ -11,35 +11,76 @@ function Profile() {
     const [currentUser, setCurrentUser] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState({ name: "", username: "", email: "", bio: "" });
 
     const isOwnProfile = currentUser?.username === username;
 
     const fetchProfile = async () => {
         try {
-            const response = await axiosInstance.get(`/user/profile/${username}`)
-            setUserData(response.data.userDetails)
-            return response.data.userDetails
+            const response = await axiosInstance.get(
+                `/user/profile/${username}`
+            );
+
+            const userProfile = response.data.userDetails;
+
+            setUserData(userProfile);
+
+           
+            setEditForm({
+                name: userProfile.name || "",
+                username: userProfile.username || "",
+                email: userProfile.email || "",
+                bio: userProfile.bio || ""
+            });
+
+            return userProfile;
 
         } catch (error) {
             console.error("Failed to fetch profile data:", error);
+            setUserData(null);
+            return null;
         }
-    }
+    };
+
+
+    useEffect(() => {
+        const getCurrentUser = async () => {
+            try {
+                const response = await axiosInstance.get("/user/me");
+
+                setCurrentUser(response.data);
+
+            } catch (error) {
+                console.log("Get current user:", error);
+            }
+        };
+
+        getCurrentUser();
+    }, []);
 
 
     useEffect(() => {
         const loadProfile = async () => {
             try {
-                setLoading(true)
+                setLoading(true);
 
-                const profile = await fetchProfile()
-                const meResponse = await axiosInstance.get("/user/me")
-                const myFollowingList = meResponse.data.following || [];
+                const profile = await fetchProfile();
 
-                setCurrentUser(meResponse.data)
+                if (!profile) {
+                    return;
+                }
+
+                const meResponse = await axiosInstance.get("/user/me");
+
+                const myFollowingList =
+                    meResponse.data.following || [];
+
+                setCurrentUser(meResponse.data);
 
                 const following = myFollowingList.some((id) => {
-                    return id.toString() == profile._id.toString();
-                })
+                    return id.toString() === profile._id.toString();
+                });
 
                 setIsFollowing(following);
 
@@ -49,34 +90,60 @@ function Profile() {
             } finally {
                 setLoading(false);
             }
-
         };
 
         loadProfile();
-    }, [username])
+
+    }, [username]);
 
 
     const handlefollow = async () => {
         try {
+
             if (isFollowing) {
-                await axiosInstance.delete(`/user/${userData._id}/follow`)
+
+                await axiosInstance.delete(
+                    `/user/${userData._id}/follow`
+                );
+
                 setIsFollowing(false);
+
             } else {
-                await axiosInstance.post(`/user/${userData._id}/follow`)
-                setIsFollowing(true)
+
+                await axiosInstance.post(
+                    `/user/${userData._id}/follow`
+                );
+
+                setIsFollowing(true);
             }
 
-            setIsFollowing(!isFollowing);
-
+           
             await fetchProfile();
+
         } catch (error) {
-            console.log(error)
-            alert(error.response?.data?.message || "Something went wrong")
+
+            console.log(error);
+
+            alert(
+                error.response?.data?.message ||
+                "Something went wrong"
+            );
         }
-    }
+    };
 
 
+   
+    const handleEditChange = (event) => {
+        const { name, value } = event.target;
 
+        setEditForm({
+            ...editForm,
+            [name]: value
+        });
+    };
+
+
+ 
     if (loading) {
         return (
             <div className="profile-loading">
@@ -86,19 +153,26 @@ function Profile() {
     }
 
 
-
     if (!userData) {
         return (
             <div className="profile-not-found">
-                <div className="not-found-card">
-                    <div className="not-found-icon">?</div>
 
-                    <h2>User profile not found</h2>
+                <div className="not-found-card">
+
+                    <div className="not-found-icon">
+                        ?
+                    </div>
+
+                    <h2>
+                        User profile not found
+                    </h2>
 
                     <p>
                         We couldn't find a profile for @{username}
                     </p>
+
                 </div>
+
             </div>
         );
     }
@@ -111,24 +185,23 @@ function Profile() {
     const firstLetter =
         userData.name?.charAt(0).toUpperCase() || "U";
 
+
     return (
         <div className="profile-page">
 
-            {/* Background decoration */}
+           
+
             <div className="profile-orb profile-orb-one"></div>
+
             <div className="profile-orb profile-orb-two"></div>
+
 
             <main className="profile-wrapper">
 
                 <section className="profile-card">
 
-                    {/* =================================
-                        PROFILE HEADER
-                    ================================= */}
-
                     <div className="profile-header">
 
-                        {/* Avatar */}
                         <div className="profile-avatar-section">
 
                             <div className="profile-avatar-wrapper">
@@ -144,8 +217,9 @@ function Profile() {
                         </div>
 
 
-                        {/* User Information */}
+
                         <div className="profile-info">
+
 
                             <div className="profile-title-row">
 
@@ -165,16 +239,22 @@ function Profile() {
 
 
                             {/* Bio */}
+
                             <p className="profile-bio">
-                                Connecting with people, sharing moments
-                                and discovering new experiences.
+
+                                {userData.bio ||
+                                    "Connecting with people, sharing moments and discovering new experiences."}
+
                             </p>
 
 
                             {/* Stats */}
+
                             <div className="profile-stats">
 
+
                                 <div className="profile-stat">
+
                                     <strong>
                                         {postsCount}
                                     </strong>
@@ -182,10 +262,12 @@ function Profile() {
                                     <span>
                                         Posts
                                     </span>
+
                                 </div>
 
 
                                 <div className="profile-stat">
+
                                     <strong>
                                         {followersCount}
                                     </strong>
@@ -193,10 +275,12 @@ function Profile() {
                                     <span>
                                         Followers
                                     </span>
+
                                 </div>
 
 
                                 <div className="profile-stat">
+
                                     <strong>
                                         {followingCount}
                                     </strong>
@@ -204,52 +288,205 @@ function Profile() {
                                     <span>
                                         Following
                                     </span>
+
                                 </div>
+
 
                             </div>
 
 
-                            {/* Buttons */}
+                            {/* =================================
+                                BUTTONS
+                            ================================= */}
+
+                            {isOwnProfile && (
+
+                                <button
+                                    className="profile-edit-btn"
+                                    onClick={() =>
+                                        setIsEditing(!isEditing)
+                                    }
+                                >
+                                    {isEditing
+                                        ? "Cancel"
+                                        : "Edit Profile"}
+                                </button>
+
+                            )}
+
+
                             {!isOwnProfile && (
+
                                 <div className="profile-actions">
+
                                     <button
                                         className="profile-follow-btn"
                                         onClick={handlefollow}
                                     >
-                                        {isFollowing ? "Unfollow" : "Follow"}
+                                        {isFollowing
+                                            ? "Unfollow"
+                                            : "Follow"}
                                     </button>
+
 
                                     <button className="profile-message-btn">
                                         Message
                                     </button>
+
                                 </div>
+
                             )}
 
                         </div>
 
                     </div>
 
-                    {/* followers */}
+
+                    {/* =================================
+                        EDIT PROFILE FORM
+                    ================================= */}
+
+                    {isEditing && isOwnProfile && (
+
+                        <div className="edit-profile-section">
+
+                            <h2>
+                                Edit Profile
+                            </h2>
+
+
+                            <div className="edit-profile-form">
+
+
+                                {/* Name */}
+
+                                <div className="edit-form-group">
+
+                                    <label>
+                                        Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={editForm.name}
+                                        onChange={handleEditChange}
+                                    />
+
+                                </div>
+
+
+                                {/* Username */}
+
+                                <div className="edit-form-group">
+
+                                    <label>
+                                        Username
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        value={editForm.username}
+                                        onChange={handleEditChange}
+                                    />
+
+                                </div>
+
+
+                                {/* Email */}
+
+                                <div className="edit-form-group">
+
+                                    <label>
+                                        Email
+                                    </label>
+
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={editForm.email}
+                                        onChange={handleEditChange}
+                                    />
+
+                                </div>
+
+
+                                {/* Bio */}
+
+                                <div className="edit-form-group">
+
+                                    <label>
+                                        Bio
+                                    </label>
+
+                                    <textarea
+                                        name="bio"
+                                        value={editForm.bio}
+                                        onChange={handleEditChange}
+                                    />
+
+                                </div>
+
+
+                                {/* Save button */}
+
+                                <button
+                                    className="edit-save-btn"
+                                    type="button"
+                                >
+                                    Save Changes
+                                </button>
+
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+
                     <div className="profile-connections">
+
+
+                        {/* Followers */}
 
                         <div className="connection-section">
 
-                            <h2>Followers</h2>
+                            <h2>
+                                Followers
+                            </h2>
+
 
                             <div className="connection-list">
 
                                 {userData.followers?.length === 0 ? (
-                                    <p>No followers yet</p>
+
+                                    <p>
+                                        No followers yet
+                                    </p>
+
                                 ) : (
+
                                     userData.followers.map((follower) => (
+
                                         <div
                                             className="connection-user"
                                             key={follower._id}
                                         >
-                                            <strong>{follower.name}</strong>
-                                            <span>@{follower.username}</span>
+
+                                            <strong>
+                                                {follower.name}
+                                            </strong>
+
+                                            <span>
+                                                @{follower.username}
+                                            </span>
+
                                         </div>
+
                                     ))
+
                                 )}
 
                             </div>
@@ -257,29 +494,50 @@ function Profile() {
                         </div>
 
 
+                        {/* Following */}
+
                         <div className="connection-section">
 
-                            <h2>Following</h2>
+                            <h2>
+                                Following
+                            </h2>
+
 
                             <div className="connection-list">
 
                                 {userData.following?.length === 0 ? (
-                                    <p>Not following anyone</p>
+
+                                    <p>
+                                        Not following anyone
+                                    </p>
+
                                 ) : (
+
                                     userData.following.map((following) => (
+
                                         <div
                                             className="connection-user"
                                             key={following._id}
                                         >
-                                            <strong>{following.name}</strong>
-                                            <span>@{following.username}</span>
+
+                                            <strong>
+                                                {following.name}
+                                            </strong>
+
+                                            <span>
+                                                @{following.username}
+                                            </span>
+
                                         </div>
+
                                     ))
+
                                 )}
 
                             </div>
 
                         </div>
+
 
                     </div>
 
@@ -288,7 +546,7 @@ function Profile() {
 
             </main>
 
-        </div >
+        </div>
     );
 }
 
