@@ -56,22 +56,6 @@ function Profile() {
 
 
     useEffect(() => {
-        const getCurrentUser = async () => {
-            try {
-                const response = await axiosInstance.get("/user/me");
-
-                setCurrentUser(response.data);
-
-            } catch (error) {
-                console.log("Get current user:", error);
-            }
-        };
-
-        getCurrentUser();
-    }, []);
-
-
-    useEffect(() => {
         const loadProfile = async () => {
             try {
                 setLoading(true);
@@ -147,10 +131,10 @@ function Profile() {
     const handleEditChange = (event) => {
         const { name, value } = event.target;
 
-        setEditForm({
-            ...editForm,
+        setEditForm((prev) => ({
+            ...prev,
             [name]: value
-        });
+        }));
     };
 
     const handleImageChange = (event) => {
@@ -158,10 +142,10 @@ function Profile() {
 
         if (!file) return;
 
-        setEditForm({
-            ...editForm,
+        setEditForm((prev) => ({
+            ...prev,
             profileImage: file
-        });
+        }));
 
         setImagePreview(URL.createObjectURL(file));
     };
