@@ -491,14 +491,14 @@
 .composer-tool input { display:none; }
 
 .home-primary-btn {
-    padding:10px 17px;
+    padding:8px 13px;
     border:0;
-    border-radius:11px;
+    border-radius:10px;
     background:linear-gradient(135deg,#655bff,#8178ff);
     color:white;
-    box-shadow:0 9px 20px rgba(99,91,255,.2);
+    box-shadow:0 7px 16px rgba(99,91,255,.18);
     cursor:pointer;
-    font-size:11px;
+    font-size:10px;
     font-weight:700;
 }
 
@@ -517,6 +517,11 @@
 }
 
 .home-file-chip strong { margin-left:5px; }
+
+.home-file-chip--reel {
+    background:#eefbf8;
+    color:#138d78;
+}
 
 .home-form-notice {
     margin:9px 2px 0;
