@@ -1,7 +1,7 @@
 import express from "express";
-import { getReel, reelCreate, updatedReelLike } from "../controllers/reel.controller";
-import isAuthenticated from "../middleware/authmiddleware";
-import reelUpload from "../middleware/reeluploadMulter";
+import { getReel, reelCreate, updatedReelLike } from "../controllers/reel.controller.js";
+import isAuthenticated from "../middleware/authmiddleware.js";
+import reelUpload from "../middleware/reeluploadMulter.js";
 
 
 const reelRoutes = express.Router();

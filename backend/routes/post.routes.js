@@ -1,7 +1,7 @@
 import express from "express";
-import { createPost, getPost, updateLikes } from "../controllers/post.controller";
-import isAuthenticated from "../middleware/authmiddleware";
-import upload from "../middleware/uploadMulter";
+import { createPost, getPost, updateLikes } from "../controllers/post.controller.js";
+import isAuthenticated from "../middleware/authmiddleware.js";
+import upload from "../middleware/uploadMulter.js";
 
 
 const postRoutes = express.Router();

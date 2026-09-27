@@ -1,6 +1,7 @@
-import e from "express";
-import Reel from "../models/reel.model";
-import User from "../models/user.model";
+import Reel from "../models/reel.model.js";
+import User from "../models/user.model.js";
+import uploadReelToCloudnary from "../utils/uploadReelToCloudnary.js";
+
 
 
 
@@ -21,7 +22,7 @@ export const reelCreate = async (req, res) => {
             });
         }
 
-        const uploadedVideo = await uploadReelToCloudinary(req.file.buffer);
+        const uploadedVideo = await uploadReelToCloudnary(req.file.buffer);
 
         const reel = await Reel.create({
             author: req.user._id,

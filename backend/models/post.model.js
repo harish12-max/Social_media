@@ -1,10 +1,13 @@
 import mongoose from "mongoose";
+import User from "./user.model.js";
+
+
 
 const postSchema = new mongoose.Schema({
 
     author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: User,
         required: true
     },
 
@@ -20,7 +23,7 @@ const postSchema = new mongoose.Schema({
 
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: User
     }]
 
 },
@@ -28,6 +31,6 @@ const postSchema = new mongoose.Schema({
 )
 
 
-const Post = mongoose.model("Post" , postSchema);
+const Post = mongoose.model("Post", postSchema);
 
-export default  Post;
+export default Post;
