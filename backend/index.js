@@ -1,9 +1,15 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import userRoutes from "./routes/user.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+
+import userRoutes from "./routes/user.routes.js";
+import postRoutes from "./routes/post.routes.js";
+import reelRoutes from "./routes/reel.routes.js";
+
+
+
 
 dotenv.config()
 const app = express()
@@ -26,6 +32,9 @@ app.use(cors({
 }))
 
 app.use("/user", userRoutes)
+app.use("/post" , postRoutes)
+app.use("/reel" , reelRoutes)
+
 
 
 app.listen(port, () => {

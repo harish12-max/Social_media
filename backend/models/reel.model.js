@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
+import User from "./user.model";
 
-const postSchema = new mongoose.Schema({
-
+const reelSchema = new mongoose.Schema({
     author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+        ref: User
     },
 
     caption: {
@@ -14,20 +13,18 @@ const postSchema = new mongoose.Schema({
         maxlength: 500
     },
 
-    image: {
-        type: String
+    video: {
+        type: String,
+        required: true
     },
 
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: User
     }]
-
 },
     { timestamps: true }
 )
 
-
-const Post = mongoose.model("Post" , postSchema);
-
-export default  Post;
+const Reel = mongoose.model("Reel", reelSchema);
+export default Reel;
