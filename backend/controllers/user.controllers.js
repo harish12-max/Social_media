@@ -223,7 +223,7 @@ export const  updateProfile  = async(req,res) =>{
             name:name.trim(),
             username:cleanusername ,
             email : cleanemail, 
-            bio: bio.trim(),
+            bio: bio?.trim() || "",
         }
 
         if(req.file){
