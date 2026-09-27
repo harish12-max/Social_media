@@ -65,7 +65,8 @@ function Home() {
     const [activeNav, setActiveNav] = useState("home");
     const [search, setSearch] = useState("");
     const [postText, setPostText] = useState("");
-    const [selectedImageName, setSelectedImageName] = useState("");
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedReel, setSelectedReel] = useState(null);
     const [demoPostsState, setDemoPostsState] = useState(demoPosts);
     const [likedPosts, setLikedPosts] = useState({});
     const [followedUsers, setFollowedUsers] = useState({});
@@ -123,21 +124,31 @@ function Home() {
     const handleImageSelect = (event) => {
         const file = event.target.files?.[0];
         if (!file) return;
-        setSelectedImageName(file.name);
-        setNotice("Image selected. Post creation will connect to your backend next.");
+
+        setSelectedImage(file);
+        setNotice(`Image selected: ${file.name}`);
+    };
+
+    const handleReelSelect = (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setSelectedReel(file);
+        setNotice(`Reel selected: ${file.name}`);
     };
 
     const handleCreatePostPlaceholder = (event) => {
         event.preventDefault();
 
-        if (!postText.trim() && !selectedImageName) {
-            setNotice("Write something or choose an image first.");
+        if (!postText.trim() && !selectedImage && !selectedReel) {
+            setNotice("Write something or choose an image/reel first.");
             return;
         }
 
         setNotice("Post composer is ready for your POST /post/create API.");
         setPostText("");
-        setSelectedImageName("");
+        setSelectedImage(null);
+        setSelectedReel(null);
         event.target.reset();
     };
 
@@ -308,10 +319,16 @@ function Home() {
                                         <span>▧</span>
                                         Add Image
                                     </label>
-                                    <button type="button" className="composer-tool">
+
+                                    <label className="composer-tool composer-tool--reel">
+                                        <input
+                                            type="file"
+                                            accept="video/*"
+                                            onChange={handleReelSelect}
+                                        />
                                         <span>▶</span>
                                         Add Reel
-                                    </button>
+                                    </label>
                                 </div>
 
                                 <button type="submit" className="home-primary-btn">
@@ -319,10 +336,17 @@ function Home() {
                                 </button>
                             </div>
 
-                            {selectedImageName && (
+                            {selectedImage && (
                                 <div className="home-file-chip">
-                                    <span>Selected</span>
-                                    <strong>{selectedImageName}</strong>
+                                    <span>Image</span>
+                                    <strong>{selectedImage.name}</strong>
+                                </div>
+                            )}
+
+                            {selectedReel && (
+                                <div className="home-file-chip home-file-chip--reel">
+                                    <span>Reel</span>
+                                    <strong>{selectedReel.name}</strong>
                                 </div>
                             )}
 
