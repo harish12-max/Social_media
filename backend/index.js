@@ -23,8 +23,6 @@ mongoose.connect(process.env.dbURL).then(() => {
 app.use(cors({
     origin: 'http://localhost:5173', // Must match exact frontend URL
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
 app.use("/user", userRoutes)

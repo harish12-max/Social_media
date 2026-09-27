@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../axiosCalls/axios";
 import "../styles/profile.css";
 
+
 function Profile() {
     const { username } = useParams();
 
@@ -33,7 +34,7 @@ function Profile() {
 
             setUserData(userProfile);
 
-           
+
             setEditForm({
                 name: userProfile.name || "",
                 username: userProfile.username || "",
@@ -127,7 +128,7 @@ function Profile() {
                 setIsFollowing(true);
             }
 
-           
+
             await fetchProfile();
 
         } catch (error) {
@@ -142,7 +143,7 @@ function Profile() {
     };
 
 
-   
+
     const handleEditChange = (event) => {
         const { name, value } = event.target;
 
@@ -165,21 +166,50 @@ function Profile() {
         setImagePreview(URL.createObjectURL(file));
     };
 
-    const handleSaveChanges = () => {
-        setUserData((prev) => ({
-            ...prev,
-            name: editForm.name,
-            username: editForm.username,
-            email: editForm.email,
-            bio: editForm.bio,
-            profileImage: imagePreview || prev.profileImage
-        }));
+    const handleSaveChanges = async () => {
 
-        setIsEditing(false);
+        try {
+            const formData = new FormData();
+
+            formData.append("name", editForm.name);
+            formData.append("username", editForm.username);
+            formData.append("email", editForm.email);
+            formData.append("bio", editForm.bio);
+
+            if (editForm.profileImage) {
+                formData.append("profileImage", editForm.profileImage)
+            }
+
+            const response = await axiosInstance.patch(`/user/profile/${userData.username}`, formData);
+
+            const updatedUser = response.data.user;
+
+            setUserData(updatedUser)
+
+            setEditForm({
+                name: updatedUser.name || "",
+                username: updatedUser.username || "",
+                email: updatedUser.email || "",
+                bio: updatedUser.bio || "",
+                profileImage: null
+            })
+
+            setImagePreview(updatedUser.profileImage || null)
+
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Update profile error:", error);
+
+            alert(
+                error.response?.data?.message ||
+                "Failed to update profile"
+            );
+        }
+
     };
 
 
- 
+
     if (loading) {
         return (
             <div className="profile-loading">
@@ -225,7 +255,7 @@ function Profile() {
     return (
         <div className="profile-page">
 
-           
+
 
             <div className="profile-orb profile-orb-one"></div>
 

@@ -15,7 +15,7 @@ const missingCloudnaryEnv = requiredCloudinaryEnv.filter(
     (key) => !process.env[key]
 )
 
-if (missingCloudinaryEnv.length > 0) {
+if (missingCloudnaryEnv.length > 0) {
     throw new Error(
         `Missing Cloudinary environment variables: ${missingCloudnaryEnv.join(", ")}`
     );
