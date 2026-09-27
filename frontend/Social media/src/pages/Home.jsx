@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../axiosCalls/axios";
@@ -71,6 +71,22 @@ function Home() {
     const [likedPosts, setLikedPosts] = useState({});
     const [followedUsers, setFollowedUsers] = useState({});
     const [notice, setNotice] = useState("");
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await axiosInstance.get("/post");
+    
+                console.log(response.data);
+                setPosts(response.data.posts);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+    
+        fetchPosts();
+    }, []);
 
     const handleLogout = async () => {
         try {
