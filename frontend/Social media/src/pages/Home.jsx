@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../axiosCalls/axios";
@@ -19,44 +19,30 @@ const suggestedUsers = [
     { name: "Meera Das", username: "meera_das", initials: "MD", tone: "pink" },
 ];
 
-const demoPosts = [
-    {
-        id: "demo-1",
-        author: "Ananya Sharma",
-        username: "ananya",
-        initials: "AS",
-        tone: "pink",
-        time: "2h ago",
-        caption: "Some days are just made for good coffee, quiet moments, and getting things done. ☕✨",
-        image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=85",
-        likes: 124,
-        comments: 18,
-    },
-    {
-        id: "demo-2",
-        author: "Rohan Mehta",
-        username: "rohan",
-        initials: "RM",
-        tone: "blue",
-        time: "5h ago",
-        caption: "Weekend walks and a little sunshine. Keeping it simple.",
-        image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85",
-        likes: 86,
-        comments: 9,
-    },
-];
-
 function Avatar({ initials, tone = "slate", size = "medium", image }) {
     return (
         <div className={`home-avatar home-avatar--${tone} home-avatar--${size}`}>
-            {image ? (
-                <img src={image} alt="" />
-            ) : (
-                <span>{initials}</span>
-            )}
+            {image ? <img src={image} alt="" /> : <span>{initials}</span>}
         </div>
     );
 }
+
+const formatTime = (date) => {
+    if (!date) return "";
+    const diff = Math.max(0, Date.now() - new Date(date).getTime());
+    const minutes = Math.floor(diff / 60000);
+
+    if (minutes < 1) return "just now";
+    if (minutes < 60) return `${minutes}m ago`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+
+    return new Date(date).toLocaleDateString();
+};
 
 function Home() {
     const { user, setUser } = useAuth();
@@ -67,32 +53,67 @@ function Home() {
     const [postText, setPostText] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedReel, setSelectedReel] = useState(null);
-    const [demoPostsState, setDemoPostsState] = useState(demoPosts);
+    const [posts, setPosts] = useState([]);
+    const [reels, setReels] = useState([]);
     const [likedPosts, setLikedPosts] = useState({});
+    const [likedReels, setLikedReels] = useState({});
     const [followedUsers, setFollowedUsers] = useState({});
     const [notice, setNotice] = useState("");
-    const [posts, setPosts] = useState([]);
+    const [error, setError] = useState("");
+    const [loadingFeed, setLoadingFeed] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+
+    const fetchFeed = async () => {
+        try {
+            setLoadingFeed(true);
+            setError("");
+
+            const [postsResponse, reelsResponse] = await Promise.all([
+                axiosInstance.get("/post"),
+                axiosInstance.get("/reel"),
+            ]);
+
+            const fetchedPosts = postsResponse.data.posts || [];
+            const fetchedReels = reelsResponse.data.reels || [];
+
+            setPosts(fetchedPosts);
+            setReels(fetchedReels);
+
+            const postLikes = {};
+            fetchedPosts.forEach((post) => {
+                postLikes[post._id] = (post.likes || []).some(
+                    (id) => id.toString() === user?._id?.toString()
+                );
+            });
+
+            const reelLikes = {};
+            fetchedReels.forEach((reel) => {
+                reelLikes[reel._id] = (reel.likes || []).some(
+                    (id) => id.toString() === user?._id?.toString()
+                );
+            });
+
+            setLikedPosts(postLikes);
+            setLikedReels(reelLikes);
+        } catch (err) {
+            console.log(err);
+            setError(err.response?.data?.message || "Unable to load your feed.");
+        } finally {
+            setLoadingFeed(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const response = await axiosInstance.get("/post");
-    
-                console.log(response.data);
-                setPosts(response.data.posts);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-    
-        fetchPosts();
-    }, []);
+        if (user?._id) {
+            fetchFeed();
+        }
+    }, [user?._id]);
 
     const handleLogout = async () => {
         try {
             await axiosInstance.post("/user/logout");
-        } catch (error) {
-            console.log(error);
+        } catch (err) {
+            console.log(err);
         } finally {
             setUser(null);
             navigate("/login");
@@ -107,76 +128,176 @@ function Home() {
 
     const handleNavClick = (item) => {
         setActiveNav(item);
-        if (item === "profile") {
-            handleProfile();
-        }
-    };
-
-    const handleLikeDemo = (id) => {
-        setLikedPosts((prev) => ({
-            ...prev,
-            [id]: !prev[id],
-        }));
-
-        setDemoPostsState((prev) =>
-            prev.map((post) => {
-                if (post.id !== id) return post;
-                const currentlyLiked = likedPosts[id];
-                return {
-                    ...post,
-                    likes: currentlyLiked ? post.likes - 1 : post.likes + 1,
-                };
-            })
-        );
-    };
-
-    const handleFollowDemo = (username) => {
-        setFollowedUsers((prev) => ({
-            ...prev,
-            [username]: !prev[username],
-        }));
+        if (item === "profile") handleProfile();
     };
 
     const handleImageSelect = (event) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
+        if (file.size > 5 * 1024 * 1024) {
+            setError("Image must be smaller than 5 MB.");
+            event.target.value = "";
+            return;
+        }
+
         setSelectedImage(file);
+        setSelectedReel(null);
         setNotice(`Image selected: ${file.name}`);
+        setError("");
     };
 
     const handleReelSelect = (event) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        setSelectedReel(file);
-        setNotice(`Reel selected: ${file.name}`);
-    };
-
-    const handleCreatePostPlaceholder = (event) => {
-        event.preventDefault();
-
-        if (!postText.trim() && !selectedImage && !selectedReel) {
-            setNotice("Write something or choose an image/reel first.");
+        if (file.size > 50 * 1024 * 1024) {
+            setError("Reel must be smaller than 50 MB.");
+            event.target.value = "";
             return;
         }
 
-        setNotice("Post composer is ready for your POST /post/create API.");
-        setPostText("");
+        setSelectedReel(file);
         setSelectedImage(null);
-        setSelectedReel(null);
-        event.target.reset();
+        setNotice(`Reel selected: ${file.name}`);
+        setError("");
     };
+
+    const handleCreateContent = async (event) => {
+        event.preventDefault();
+
+        const caption = postText.trim();
+
+        if (!caption && !selectedImage && !selectedReel) {
+            setError("Write a caption or choose a file first.");
+            return;
+        }
+
+        if (selectedImage && selectedReel) {
+            setError("Choose either an image or a reel, not both.");
+            return;
+        }
+
+        if (!caption) {
+            setError("Caption is required for a post.");
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            setError("");
+            setNotice("");
+
+            const formData = new FormData();
+            formData.append("caption", caption);
+
+            if (selectedImage) {
+                formData.append("image", selectedImage);
+
+                const response = await axiosInstance.post("/post/create", formData);
+
+                setPosts((prev) => [response.data.post, ...prev]);
+                setLikedPosts((prev) => ({
+                    ...prev,
+                    [response.data.post._id]: false,
+                }));
+
+                setNotice("Post created successfully.");
+            } else if (selectedReel) {
+                formData.append("video", selectedReel);
+
+                const response = await axiosInstance.post("/reel/createReel", formData);
+
+                setReels((prev) => [response.data.reel, ...prev]);
+                setLikedReels((prev) => ({
+                    ...prev,
+                    [response.data.reel._id]: false,
+                }));
+
+                setNotice("Reel created successfully.");
+            }
+
+            setPostText("");
+            setSelectedImage(null);
+            setSelectedReel(null);
+            event.target.reset();
+        } catch (err) {
+            console.log(err);
+            setError(err.response?.data?.message || "Could not create content.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handlePostLike = async (postId) => {
+        try {
+            const response = await axiosInstance.post(`/post/likes/${postId}`);
+            const { likes, liked } = response.data;
+
+            setPosts((prev) =>
+                prev.map((post) =>
+                    post._id === postId
+                        ? { ...post, likes: Array.from({ length: likes }, (_, index) => index) }
+                        : post
+                )
+            );
+
+            setLikedPosts((prev) => ({
+                ...prev,
+                [postId]: liked,
+            }));
+        } catch (err) {
+            console.log(err);
+            setError(err.response?.data?.message || "Could not update post like.");
+        }
+    };
+
+    const handleReelLike = async (reelId) => {
+        try {
+            const response = await axiosInstance.post(`/reel/likes/${reelId}`);
+            const { likes, liked } = response.data;
+
+            setReels((prev) =>
+                prev.map((reel) =>
+                    reel._id === reelId
+                        ? { ...reel, likes: Array.from({ length: likes }, (_, index) => index) }
+                        : reel
+                )
+            );
+
+            setLikedReels((prev) => ({
+                ...prev,
+                [reelId]: liked,
+            }));
+        } catch (err) {
+            console.log(err);
+            setError(err.response?.data?.message || "Could not update reel like.");
+        }
+    };
+
+    const feedItems = useMemo(() => {
+        const postItems = posts.map((post) => ({
+            ...post,
+            contentType: "post",
+        }));
+
+        const reelItems = reels.map((reel) => ({
+            ...reel,
+            contentType: "reel",
+        }));
+
+        return [...postItems, ...reelItems].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+    }, [posts, reels]);
+
+    const getLikeCount = (likes) => (Array.isArray(likes) ? likes.length : 0);
 
     return (
         <div className="home-page">
             <header className="home-navbar">
                 <div className="home-navbar__left">
-                    <button
-                        className="home-brand"
-                        type="button"
-                        onClick={() => handleNavClick("home")}
-                    >
+                    <button className="home-brand" type="button" onClick={() => handleNavClick("home")}>
                         <span className="home-brand__mark">S</span>
                         <div>
                             <strong>SST Social</strong>
@@ -206,9 +327,7 @@ function Home() {
                 </div>
 
                 <div className="home-navbar__right">
-                    <button className="home-icon-btn" type="button" aria-label="Notifications">
-                        ♡
-                    </button>
+                    <button className="home-icon-btn" type="button" aria-label="Notifications">♡</button>
 
                     <button className="home-user-chip" type="button" onClick={handleProfile}>
                         <Avatar
@@ -278,9 +397,7 @@ function Home() {
                             <p className="home-eyebrow">HOME</p>
                             <h1>Your latest updates</h1>
                         </div>
-                        <button type="button" className="home-filter-btn">
-                            Latest <span>⌄</span>
-                        </button>
+                        <button type="button" className="home-filter-btn">Latest <span>⌄</span></button>
                     </div>
 
                     <section className="home-stories card-surface">
@@ -316,12 +433,13 @@ function Home() {
                             </div>
                         </div>
 
-                        <form onSubmit={handleCreatePostPlaceholder}>
+                        <form onSubmit={handleCreateContent}>
                             <textarea
                                 value={postText}
                                 onChange={(event) => setPostText(event.target.value)}
                                 placeholder="What's on your mind?"
                                 rows="3"
+                                disabled={submitting}
                             />
 
                             <div className="home-composer__footer">
@@ -331,6 +449,7 @@ function Home() {
                                             type="file"
                                             accept="image/*"
                                             onChange={handleImageSelect}
+                                            disabled={submitting}
                                         />
                                         <span>▧</span>
                                         Add Image
@@ -341,14 +460,15 @@ function Home() {
                                             type="file"
                                             accept="video/*"
                                             onChange={handleReelSelect}
+                                            disabled={submitting}
                                         />
                                         <span>▶</span>
                                         Add Reel
                                     </label>
                                 </div>
 
-                                <button type="submit" className="home-primary-btn">
-                                    + Post
+                                <button type="submit" className="home-primary-btn" disabled={submitting}>
+                                    {submitting ? "Posting..." : "+ Post"}
                                 </button>
                             </div>
 
@@ -366,73 +486,102 @@ function Home() {
                                 </div>
                             )}
 
-                            {notice && <p className="home-form-notice">{notice}</p>}
+                            {notice && <p className="home-form-notice home-form-notice--success">{notice}</p>}
+                            {error && <p className="home-form-notice home-form-notice--error">{error}</p>}
                         </form>
                     </section>
 
                     <section className="home-posts">
-                        {demoPostsState.map((post) => {
-                            const isLiked = !!likedPosts[post.id];
+                        {loadingFeed ? (
+                            <div className="home-feed-status card-surface">Loading your feed...</div>
+                        ) : error && feedItems.length === 0 ? (
+                            <div className="home-feed-status card-surface">{error}</div>
+                        ) : feedItems.length === 0 ? (
+                            <div className="home-feed-status card-surface">
+                                No posts or reels yet. Create the first one.
+                            </div>
+                        ) : (
+                            feedItems.map((item) => {
+                                const isReel = item.contentType === "reel";
+                                const isLiked = isReel
+                                    ? !!likedReels[item._id]
+                                    : !!likedPosts[item._id];
 
-                            return (
-                                <article className="home-post card-surface" key={post.id}>
-                                    <div className="home-post__header">
-                                        <div className="home-post__author">
-                                            <Avatar initials={post.initials} tone={post.tone} size="medium" />
-                                            <div>
-                                                <strong>{post.author}</strong>
-                                                <span>@{post.username} · {post.time}</span>
+                                return (
+                                    <article className="home-post card-surface" key={`${item.contentType}-${item._id}`}>
+                                        <div className="home-post__header">
+                                            <div className="home-post__author">
+                                                <Avatar
+                                                    initials={(item.author?.name || "U").slice(0, 1).toUpperCase()}
+                                                    tone="purple"
+                                                    size="medium"
+                                                    image={item.author?.profileImage}
+                                                />
+                                                <div>
+                                                    <strong>{item.author?.name || "Unknown user"}</strong>
+                                                    <span>
+                                                        @{item.author?.username || "user"} · {formatTime(item.createdAt)}
+                                                    </span>
+                                                </div>
                                             </div>
+
+                                            {isReel && <span className="home-content-badge">REEL</span>}
                                         </div>
 
-                                        <button type="button" className="home-more-btn" aria-label="More options">
-                                            ···
-                                        </button>
-                                    </div>
+                                        {item.caption && (
+                                            <p className="home-post__caption">{item.caption}</p>
+                                        )}
 
-                                    <p className="home-post__caption">{post.caption}</p>
+                                        {isReel ? (
+                                            <video
+                                                className="home-post__video"
+                                                src={item.video}
+                                                controls
+                                                playsInline
+                                                preload="metadata"
+                                            />
+                                        ) : (
+                                            <img
+                                                className="home-post__image"
+                                                src={item.image}
+                                                alt={item.caption || "Post"}
+                                                loading="lazy"
+                                            />
+                                        )}
 
-                                    <img
-                                        className="home-post__image"
-                                        src={post.image}
-                                        alt="Post"
-                                        loading="lazy"
-                                    />
-
-                                    <div className="home-post__meta">
-                                        <span>{post.likes} likes</span>
-                                        <span>{post.comments} comments</span>
-                                    </div>
-
-                                    <div className="home-post__actions">
-                                        <button
-                                            type="button"
-                                            className={isLiked ? "is-liked" : ""}
-                                            onClick={() => handleLikeDemo(post.id)}
-                                        >
-                                            <span>♥</span>
-                                            Like
-                                        </button>
-                                        <button type="button">
-                                            <span>◌</span>
-                                            Comment
-                                        </button>
-                                        <button type="button">
-                                            <span>↗</span>
-                                            Share
-                                        </button>
-                                    </div>
-
-                                    <div className="home-comment-preview">
-                                        <Avatar initials="PM" tone="orange" size="tiny" />
-                                        <div>
-                                            <strong>Priya Nair</strong>
-                                            <span>Love this! ✨</span>
+                                        <div className="home-post__meta">
+                                            <span>{getLikeCount(item.likes)} likes</span>
+                                            <span>{isReel ? "Reel" : "Post"}</span>
                                         </div>
-                                    </div>
-                                </article>
-                            );
-                        })}
+
+                                        <div className="home-post__actions">
+                                            <button
+                                                type="button"
+                                                className={isLiked ? "is-liked" : ""}
+                                                onClick={() =>
+                                                    isReel
+                                                        ? handleReelLike(item._id)
+                                                        : handlePostLike(item._id)
+                                                }
+                                            >
+                                                <span>♥</span>
+                                                Like
+                                            </button>
+
+                                            <button type="button" disabled>
+                                                <span>◌</span>
+                                                Comment
+                                            </button>
+
+                                            <button type="button" disabled>
+                                                <span>↗</span>
+                                                Share
+                                            </button>
+                                        </div>
+                                    </article>
+                                );
+                            })
+                        )}
                     </section>
                 </section>
 
@@ -460,7 +609,12 @@ function Home() {
                                         <button
                                             type="button"
                                             className={followed ? "is-following" : ""}
-                                            onClick={() => handleFollowDemo(person.username)}
+                                            onClick={() =>
+                                                setFollowedUsers((prev) => ({
+                                                    ...prev,
+                                                    [person.username]: !prev[person.username],
+                                                }))
+                                            }
                                         >
                                             {followed ? "Following" : "Follow"}
                                         </button>
