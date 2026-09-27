@@ -1,6 +1,7 @@
 import User from "../models/user.model.js"
 import bcrypt from "bcrypt";
 import gentoken from "../utils/gentoken.js";
+import uploadtocloudnary from "../utils/uploadtocloudnary.js";
 
 const cookieOptions = {
     httpOnly: true,
@@ -193,5 +194,49 @@ export const unfollowUser = async (req, res) => {
         console.log(error)
         return res.status(500).json({ message: "Internal server error" })
 
+    }
+}
+
+
+export const  updateProfile  = async(req,res) =>{
+    try {
+        const userId = req.user._id
+        const{name, username ,email , bio} = req.body ;
+
+
+        if (!name?.trim() || !username?.trim() || !email?.trim()) {
+            return res.status(400).json({ message: "Name, username and email are required" });
+        }
+
+        const cleanusername = username.trim();
+        const cleanemail = email.trim().toLowerCase()
+
+        if(await User.findOne({username: cleanusername, _id:{$ne: userId } })){
+            return res.status(409).json({message:"UserName Already Taken"})
+        }
+
+        if(await User.findOne({email:cleanemail , _id:{$ne: userId}})){
+            return res.status(409).json({message:"Email Already Taken"})
+        }
+
+        const update = {
+            name:name.trim(),
+            username:cleanusername ,
+            email : cleanemail, 
+            bio: bio.trim(),
+        }
+
+        if(req.file){
+            const uploadImage = await uploadtocloudnary(req.file.buffer)
+            update.profileImage = uploadImage.secure_url;
+        }
+
+        const updateuser = await User.findByIdAndUpdate(userId , update, {new: true, runValidators: true}).select("-password");
+
+        return res.status(200).json({message:"profile Updated " ,user: updateuser})
+        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({message:"Internal Server Error"})
     }
 }
