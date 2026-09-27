@@ -50,7 +50,7 @@ export const createPost = async(req, res) =>{
 
 export const getPost = async(req , res) =>{
     try {
-        const posts = await Post.find().populate("Author","name username profileImage");
+        const posts = await Post.find().populate("author","name username profileImage").sort({ createdAt: -1 });
 
         return res.status(200).json({
             message: "Posts fetched successfully",

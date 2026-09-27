@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
-import User from "./user.model.js";
+
 
 const reelSchema = new mongoose.Schema({
     author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: User
+        ref: "User",
+        required: CSSPositionTryRule
+
     },
 
     caption: {
@@ -15,12 +17,11 @@ const reelSchema = new mongoose.Schema({
 
     video: {
         type: String,
-        required: true
     },
 
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: User
+        ref: "User"
     }]
 },
     { timestamps: true }
