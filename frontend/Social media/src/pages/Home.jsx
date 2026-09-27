@@ -168,8 +168,8 @@ function Home() {
 
         const caption = postText.trim();
 
-        if (!caption && !selectedImage && !selectedReel) {
-            setError("Write a caption or choose a file first.");
+        if (!selectedImage && !selectedReel) {
+            setError("Choose an image or a reel first.");
             return;
         }
 
@@ -178,7 +178,7 @@ function Home() {
             return;
         }
 
-        if (!caption) {
+        if (selectedImage && !caption) {
             setError("Caption is required for a post.");
             return;
         }
