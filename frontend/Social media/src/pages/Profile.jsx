@@ -12,7 +12,14 @@ function Profile() {
     const [isFollowing, setIsFollowing] = useState(false);
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editForm, setEditForm] = useState({ name: "", username: "", email: "", bio: "" });
+    const [editForm, setEditForm] = useState({
+        name: "",
+        username: "",
+        email: "",
+        bio: "",
+        profileImage: null
+    });
+    const [imagePreview, setImagePreview] = useState(null);
 
     const isOwnProfile = currentUser?.username === username;
 
@@ -31,8 +38,11 @@ function Profile() {
                 name: userProfile.name || "",
                 username: userProfile.username || "",
                 email: userProfile.email || "",
-                bio: userProfile.bio || ""
+                bio: userProfile.bio || "",
+                profileImage: null
             });
+
+            setImagePreview(userProfile.profileImage || null);
 
             return userProfile;
 
@@ -142,6 +152,32 @@ function Profile() {
         });
     };
 
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+
+        if (!file) return;
+
+        setEditForm({
+            ...editForm,
+            profileImage: file
+        });
+
+        setImagePreview(URL.createObjectURL(file));
+    };
+
+    const handleSaveChanges = () => {
+        setUserData((prev) => ({
+            ...prev,
+            name: editForm.name,
+            username: editForm.username,
+            email: editForm.email,
+            bio: editForm.bio,
+            profileImage: imagePreview || prev.profileImage
+        }));
+
+        setIsEditing(false);
+    };
+
 
  
     if (loading) {
@@ -207,7 +243,14 @@ function Profile() {
                             <div className="profile-avatar-wrapper">
 
                                 <div className="profile-avatar">
-                                    {firstLetter}
+                                    {userData.profileImage ? (
+                                        <img
+                                            src={userData.profileImage}
+                                            alt={userData.name}
+                                        />
+                                    ) : (
+                                        firstLetter
+                                    )}
                                 </div>
 
                                 <span className="online-dot"></span>
@@ -358,6 +401,31 @@ function Profile() {
                             <div className="edit-profile-form">
 
 
+                                {/* Profile Image */}
+
+                                <div className="edit-form-group">
+
+                                    <label>
+                                        Profile Image
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                    />
+
+                                    {imagePreview && (
+                                        <img
+                                            src={imagePreview}
+                                            alt="Profile Preview"
+                                            className="profile-image-preview"
+                                        />
+                                    )}
+
+                                </div>
+
+
                                 {/* Name */}
 
                                 <div className="edit-form-group">
@@ -434,6 +502,7 @@ function Profile() {
                                 <button
                                     className="edit-save-btn"
                                     type="button"
+                                    onClick={handleSaveChanges}
                                 >
                                     Save Changes
                                 </button>
